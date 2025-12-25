@@ -5,6 +5,15 @@
 **Status**: Draft
 **Input**: User description: "We are building a program that will accept a location name, such as a city name or a village and respond with the current weather at that location. If there is more than one location of the requested name available, the program will list available options (up to 10) and ask the user to select one interactively. If there is more than 10 matching locations, we use firtst 10. If there is no known location that matches the requested name, the program informs the user of that fact. Current weather includes air temperature, humidity, apparent temperature, precipitation, cloud cover, air pressure, wind speed, wind direction, wind gusts. After the response is delivered to the user using standard output, the program terminates."
 
+## Clarifications
+
+### Session 2025-12-25
+- Q: Which external API should be used for location search and weather data? → A: Open-Meteo (Free, no API key required).
+- Q: What is the preferred output format for the weather report? → A: Key-Value List (e.g., `Temperature: 20°C`).
+- Q: Which CLI argument parsing library should be used? → A: Standard `flag` package.
+- Q: How should unit systems (Metric/Imperial) be handled? → A: Metric only (Simplest, no configuration).
+- Q: How should multiple matches be handled in non-interactive mode (e.g., scripts)? → A: Display list of matches and exit (Informative, requires retry).
+
 ## User Scenarios & Testing
 
 ### User Story 1 - Get Weather for Unique Location (Priority: P1)
@@ -57,6 +66,7 @@ As a user, I want to be informed if my location cannot be found, so that I can t
 1.  **Input Handling**:
     *   The system MUST accept a location name as a command-line argument.
     *   The system MUST support multi-word location names (e.g., "New York").
+    *   **Constraint**: Use the standard `flag` package for argument parsing.
 
 2.  **Location Search**:
     *   The system MUST query a location service to find matches for the user input.
@@ -68,6 +78,7 @@ As a user, I want to be informed if my location cannot be found, so that I can t
 3.  **Interactive Selection**:
     *   When multiple matches exist, the system MUST prompt the user to select one by index/number.
     *   The system MUST validate the user's selection (ensure it is within the valid range).
+    *   **Non-Interactive Mode**: If the standard input is not a terminal (e.g., piped input), the system MUST display the list of matches and terminate immediately with a non-zero exit code, without waiting for input.
 
 4.  **Weather Retrieval**:
     *   The system MUST retrieve current weather data for the selected location.
@@ -84,6 +95,7 @@ As a user, I want to be informed if my location cannot be found, so that I can t
 
 5.  **Output**:
     *   The system MUST display the weather data to Standard Output (stdout).
+    *   The output format MUST be a simple Key-Value list (e.g., `Label: Value Unit`).
     *   The output MUST be human-readable.
     *   The program MUST terminate with exit code 0 after successful display.
     *   The program MUST terminate with a non-zero exit code if an error occurs (e.g., network error, invalid selection).
@@ -97,7 +109,8 @@ As a user, I want to be informed if my location cannot be found, so that I can t
 
 ## Assumptions
 
-*   An external API is available to provide both location search and weather data.
+*   **External API**: Open-Meteo will be used for both location search (Geocoding API) and weather data (Weather Forecast API). No API key is required.
+*   **Units**: The system will strictly use Metric units (Celsius, km/h, mm) for this version.
 *   The user has an active internet connection.
 *   "Standard output" implies text format in the terminal.
 *   Default units (Metric) are acceptable unless otherwise specified.
