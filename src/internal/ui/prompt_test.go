@@ -5,8 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"weather-reporter/src/internal/models"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSelectLocation(t *testing.T) {
