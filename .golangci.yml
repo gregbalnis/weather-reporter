@@ -18,14 +18,14 @@ linters:
     - misspell
     - revive
 
-linters-settings:
-  gocyclo:
-    min-complexity: 15
-  revive:
-    rules:
-      - name: exported
-        severity: warning
-        disabled: false
-        arguments:
-          - "checkPrivateReceivers"
-          - "sayRepetitiveInsteadOfStutter"
+  settings:
+    gocyclo:
+      min-complexity: 15
+    revive:
+      rules:
+        - name: exported
+          severity: warning
+          disabled: false
+          arguments:
+            - "check-private-receivers"
+            - "say-repetitive-instead-of-stutters"
