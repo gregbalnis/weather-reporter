@@ -1,10 +1,10 @@
 <!--
 Sync Impact Report:
-- Version change: (New) -> 1.0.0
-- List of modified principles: Defined Principles I-IV
-- Added sections: Technical Stack, Development Workflow
+- Version change: 1.0.0 -> 1.1.0
+- List of modified principles: Testing Standards (added 80% coverage requirement)
+- Added sections: None
 - Removed sections: None
-- Templates requiring updates: ✅ None
+- Templates requiring updates: ✅ tasks-template.md
 - Follow-up TODOs: None
 -->
 # weather-reporter Constitution
@@ -15,7 +15,7 @@ Sync Impact Report:
 We strictly adhere to the idioms and best practices outlined in [Effective Go](https://go.dev/doc/effective_go). Code MUST be formatted with `gofmt`. Naming conventions, error handling, and concurrency patterns MUST follow Go community standards. Clarity and simplicity are preferred over cleverness. Public APIs MUST be documented.
 
 ### II. Testing Standards
-Testing is mandatory. All packages MUST have unit tests (`_test.go`) colocated with source code. Test coverage SHOULD aim for high confidence in core logic. Integration tests are REQUIRED for external interactions (APIs, file systems). Tests MUST be deterministic and fast.
+Testing is mandatory. All packages MUST have unit tests (`_test.go`) colocated with source code. Test coverage MUST meet a minimum of 80% for unit tests. Integration tests are REQUIRED for external interactions (APIs, file systems). Tests MUST be deterministic and fast.
 
 ### III. User Experience Consistency
 The CLI and output MUST be consistent and predictable. Use standard flags and arguments. Output SHOULD be human-readable by default, with options for machine-readable formats (e.g., JSON) where appropriate. Error messages MUST be actionable and clear to the end-user, distinguishing between user errors and system failures.
@@ -47,4 +47,4 @@ This Constitution supersedes all other practices. Amendments require documentati
 3.  New dependencies MUST be vetted for license and maintenance status.
 4.  Versioning follows Semantic Versioning (SemVer).
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-25 | **Last Amended**: 2025-12-25
+**Version**: 1.1.0 | **Ratified**: 2025-12-25 | **Last Amended**: 2025-12-27
