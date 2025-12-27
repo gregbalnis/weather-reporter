@@ -33,18 +33,18 @@ func SelectLocation(locations []models.Location, in io.Reader, out io.Writer, in
 	}
 
 	if !interactive {
-		fmt.Fprintln(out, "Multiple locations found:")
+		_, _ = fmt.Fprintln(out, "Multiple locations found:")
 		printLocations(out, locations[:displayCount])
 		return models.Location{}, fmt.Errorf("multiple locations found, please be more specific")
 	}
 
-	fmt.Fprintln(out, "Multiple locations found:")
+	_, _ = fmt.Fprintln(out, "Multiple locations found:")
 	printLocations(out, locations[:displayCount])
 
 	reader := bufio.NewReader(in)
 
 	for {
-		fmt.Fprintf(out, "Select location [1-%d]: ", displayCount)
+		_, _ = fmt.Fprintf(out, "Select location [1-%d]: ", displayCount)
 		input, err := reader.ReadString('\n')
 		if err != nil {
 			return models.Location{}, fmt.Errorf("failed to read input: %w", err)
@@ -53,7 +53,7 @@ func SelectLocation(locations []models.Location, in io.Reader, out io.Writer, in
 		input = strings.TrimSpace(input)
 		index, err := strconv.Atoi(input)
 		if err != nil || index < 1 || index > displayCount {
-			fmt.Fprintf(out, "Invalid selection. Please enter a number between 1 and %d.\n", displayCount)
+			_, _ = fmt.Fprintf(out, "Invalid selection. Please enter a number between 1 and %d.\n", displayCount)
 			continue
 		}
 
@@ -63,6 +63,6 @@ func SelectLocation(locations []models.Location, in io.Reader, out io.Writer, in
 
 func printLocations(out io.Writer, locations []models.Location) {
 	for i, loc := range locations {
-		fmt.Fprintf(out, "%d. %s, %s (%s)\n", i+1, loc.Name, loc.Country, loc.Region)
+		_, _ = fmt.Fprintf(out, "%d. %s, %s (%s)\n", i+1, loc.Name, loc.Country, loc.Region)
 	}
 }

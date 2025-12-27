@@ -1,3 +1,4 @@
+// Package geo provides functionality for searching locations using a geocoding API.
 package geo
 
 import (
@@ -13,11 +14,14 @@ import (
 
 const defaultBaseURL = "https://geocoding-api.open-meteo.com/v1"
 
+// Client is a client for the geocoding API.
 type Client struct {
 	httpClient *http.Client
 	baseURL    string
 }
 
+// NewClient creates a new geocoding client.
+// If httpClient is nil, a default client with a 10s timeout is used.
 func NewClient(httpClient *http.Client) *Client {
 	if httpClient == nil {
 		httpClient = &http.Client{
@@ -34,6 +38,7 @@ type searchResponse struct {
 	Results []models.Location `json:"results"`
 }
 
+// Search searches for locations by name.
 func (c *Client) Search(ctx context.Context, name string) ([]models.Location, error) {
 	u, err := url.Parse(c.baseURL + "/search")
 	if err != nil {
@@ -56,7 +61,7 @@ func (c *Client) Search(ctx context.Context, name string) ([]models.Location, er
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)

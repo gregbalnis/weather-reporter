@@ -5,7 +5,7 @@
 
 ## Phase 1: Setup
 - [x] T001 Initialize Go module `weather-reporter` in `go.mod`
-- [x] T002 Create project directory structure (`src/cmd/weather`, `src/internal/geo`, `src/internal/weather`, `src/internal/ui`, `src/internal/models`)
+- [x] T002 Create project directory structure (`src/cmd/weather-reporter`, `src/internal/geo`, `src/internal/weather`, `src/internal/ui`, `src/internal/models`)
 - [x] T003 Install `github.com/stretchr/testify` dependency
 
 ## Phase 2: Foundational
@@ -20,8 +20,8 @@
 - [x] T007 [P] [US1] Implement `WeatherService` client in `src/internal/weather/client.go`
 - [x] T008 [P] [US1] Add unit tests for `GeocodingService` in `src/internal/geo/client_test.go`
 - [x] T009 [P] [US1] Add unit tests for `WeatherService` in `src/internal/weather/client_test.go`
-- [x] T010 [US1] Implement main entry point with argument parsing in `src/cmd/weather/main.go`
-- [x] T011 [US1] Implement "Unique Location" workflow (Search -> Get -> Print) in `src/cmd/weather/main.go`
+- [x] T010 [US1] Implement main entry point with argument parsing in `src/cmd/weather-reporter/main.go`
+- [x] T011 [US1] Implement "Unique Location" workflow (Search -> Get -> Print) in `src/cmd/weather-reporter /main.go`
 
 ## Phase 4: User Story 2 - Disambiguate Location (P1)
 **Goal**: User can select from a list of locations when search is ambiguous.
@@ -30,15 +30,14 @@
 - [x] T012 [P] [US2] Implement `SelectLocation` prompt function in `src/internal/ui/prompt.go`
 - [x] T013 [P] [US2] Implement non-interactive mode detection in `src/internal/ui/prompt.go`
 - [x] T014 [US2] Add unit tests for UI logic in `src/internal/ui/prompt_test.go`
-- [x] T015 [US2] Update `src/cmd/weather/main.go` to handle multiple matches using `ui.SelectLocation`
+- [x] T015 [US2] Update `src/cmd/weather-reporter/main.go` to handle multiple matches using `ui.SelectLocation`
 
 ## Phase 5: User Story 3 - Handle Unknown Location (P2)
 **Goal**: User is informed when no location matches their search.
 **Independent Test**: Run `./weather-reporter "InvalidLocationName"`, see "not found" message.
 
-- [x] T016 [US3] Update `src/cmd/weather/main.go` to handle 0 results from search
-- [x] T017 [US3] Verify error message output in `src/cmd/weather/main.go`
-
+- [x] T016 [US3] Update `src/cmd/weather-reporter/main.go` to handle 0 results from search
+- [x] T017 [US3] Verify error message output in `src/cmd/weather-reporter/main.go`
 ## Phase 6: Polish & Cross-Cutting Concerns
 - [x] T018 Verify all tests pass with `go test ./...`
 - [x] T019 Ensure code formatting with `go fmt ./...`

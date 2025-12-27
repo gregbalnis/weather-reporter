@@ -1,3 +1,4 @@
+// Package weather provides functionality for fetching weather data.
 package weather
 
 import (
@@ -15,11 +16,14 @@ import (
 
 const defaultBaseURL = "https://api.open-meteo.com/v1"
 
+// Client is a client for the weather API.
 type Client struct {
 	httpClient *http.Client
 	baseURL    string
 }
 
+// NewClient creates a new weather client.
+// If httpClient is nil, a default client with a 10s timeout is used.
 func NewClient(httpClient *http.Client) *Client {
 	if httpClient == nil {
 		httpClient = &http.Client{
@@ -32,6 +36,7 @@ func NewClient(httpClient *http.Client) *Client {
 	}
 }
 
+// GetCurrentWeather fetches the current weather for the given coordinates.
 func (c *Client) GetCurrentWeather(ctx context.Context, lat, lon float64) (*models.WeatherResponse, error) {
 	u, err := url.Parse(c.baseURL + "/forecast")
 	if err != nil {
@@ -68,7 +73,7 @@ func (c *Client) GetCurrentWeather(ctx context.Context, lat, lon float64) (*mode
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)

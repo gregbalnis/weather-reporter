@@ -1,5 +1,8 @@
 # Weather Reporter
 
+![CI](https://github.com/owner/weather-reporter/actions/workflows/ci.yml/badge.svg)
+![Release](https://img.shields.io/github/v/release/owner/weather-reporter)
+
 Weather Reporter is a command-line interface (CLI) tool written in Go that fetches current weather information for any location using the [Open-Meteo API](https://open-meteo.com/).
 
 ## Features
@@ -25,7 +28,7 @@ Weather Reporter is a command-line interface (CLI) tool written in Go that fetch
 
 2. Build the binary:
    ```bash
-   go build -o weather-reporter ./src/cmd/weather
+   go build -o weather-reporter ./src/cmd/weather-reporter
    ```
 
 ## Usage
@@ -86,7 +89,7 @@ go test ./...
 
 ### Project Structure
 
-- `src/cmd/weather`: Main entry point.
+- `src/cmd/weather-reporter`: Main entry point.
 - `src/internal/geo`: Geocoding service client.
 - `src/internal/weather`: Weather service client.
 - `src/internal/ui`: User interaction logic.
