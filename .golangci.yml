@@ -1,14 +1,13 @@
 # golangci-lint configuration file
 # see https://golangci-lint.run/docs/configuration/file/
 
-version: 2
+version: "2"
 
 run:
   concurrency: 4
   timeout: 5m
 
 linters:
-  disable-all: true
   enable:
     - errcheck
     - govet
