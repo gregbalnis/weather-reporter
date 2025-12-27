@@ -8,3 +8,7 @@ uvx --from git+https://github.com/github/spec-kit.git specify init --here --ai c
 # Spec-kit workflow
 
 [Spec-kit documentation](https://github.com/github/spec-kit?tab=readme-ov-file#step-1-establish-project-principles)
+
+# Linting
+
+Review the selection of linters in `.golangci.yml` and adjust as needed.

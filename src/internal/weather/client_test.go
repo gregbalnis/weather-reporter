@@ -102,7 +102,7 @@ func TestGetCurrentWeather(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, "/forecast", r.URL.Path)
 				w.WriteHeader(tt.mockStatusCode)
-				w.Write([]byte(tt.mockResponse))
+				_, _ = w.Write([]byte(tt.mockResponse))
 			}))
 			defer server.Close()
 
@@ -122,7 +122,7 @@ func TestGetCurrentWeather(t *testing.T) {
 }
 
 func TestGetCurrentWeather_Timeout(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {
 		time.Sleep(10 * time.Millisecond)
 	}))
 	defer server.Close()

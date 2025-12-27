@@ -1,3 +1,4 @@
+// Package main is the entry point for the weather-reporter CLI application.
 package main
 
 import (
@@ -14,8 +15,23 @@ import (
 	"weather-reporter/src/internal/weather"
 )
 
+var (
+	Version = "dev"
+	Commit  = "none"
+	Date    = "unknown"
+)
+
 func main() {
+	versionFlag := flag.Bool("version", false, "Print version information")
 	flag.Parse()
+
+	if *versionFlag {
+		fmt.Printf("weather-reporter version %s\n", Version)
+		fmt.Printf("commit: %s\n", Commit)
+		fmt.Printf("built at: %s\n", Date)
+		os.Exit(0)
+	}
+
 	args := flag.Args()
 
 	if len(args) == 0 {

@@ -24,10 +24,10 @@ tests/
 Go (Latest Stable): Follow standard conventions
 
 ## Recent Changes
+- 003-automated-delivery-pipeline: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 - 002-increase-test-coverage: Added Go 1.25.5 + `github.com/stretchr/testify`
 - 001-weather-by-location: Added Go (Latest Stable) + Standard Library (`flag`, `net/http`, `encoding/json`, `bufio`), `github.com/stretchr/testify` (Testing), Open-Meteo API (External)
 
-- 001-weather-by-location: Added Go (Latest Stable) + Standard Library (`flag`, `net/http`, `encoding/json`, `bufio`), Open-Meteo API (External)
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

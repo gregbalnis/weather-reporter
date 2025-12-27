@@ -63,7 +63,7 @@ func TestSearch(t *testing.T) {
 				assert.Equal(t, "/search", r.URL.Path)
 				assert.Equal(t, tt.query, r.URL.Query().Get("name"))
 				w.WriteHeader(tt.mockStatusCode)
-				w.Write([]byte(tt.mockResponse))
+				_, _ = w.Write([]byte(tt.mockResponse))
 			}))
 			defer server.Close()
 
@@ -88,7 +88,7 @@ func TestSearch(t *testing.T) {
 
 func TestSearch_Timeout(t *testing.T) {
 	// Create a server that sleeps longer than the client timeout
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {
 		time.Sleep(10 * time.Millisecond)
 	}))
 	defer server.Close()

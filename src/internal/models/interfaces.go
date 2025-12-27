@@ -1,3 +1,4 @@
+// Package models defines the data structures and interfaces for the application.
 package models
 
 import "context"

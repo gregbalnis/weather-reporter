@@ -6,7 +6,7 @@
 
 ## Build
 ```bash
-go build -o weather-reporter ./cmd/weather
+go build -o weather-reporter ./src/cmd/weather-reporter
 ```
 
 ## Usage

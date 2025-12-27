@@ -80,8 +80,8 @@ func TestIsTerminal(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(tmpfile.Name()) // clean up
-	defer tmpfile.Close()
+	defer func() { _ = os.Remove(tmpfile.Name()) }() // clean up
+	defer func() { _ = tmpfile.Close() }()
 
 	// It's a file, not a terminal
 	assert.False(t, IsTerminal(tmpfile))
@@ -89,7 +89,7 @@ func TestIsTerminal(t *testing.T) {
 
 type errorReader struct{}
 
-func (e *errorReader) Read(p []byte) (n int, err error) {
+func (e *errorReader) Read(_ []byte) (n int, err error) {
 	return 0, fmt.Errorf("simulated read error")
 }
 
