@@ -4,6 +4,7 @@ Auto-generated from all feature plans. Last updated: 2025-12-26
 
 ## Active Technologies
 - Go (Latest Stable) + Standard Library (`flag`, `net/http`, `encoding/json`, `bufio`), `github.com/stretchr/testify` (Testing), Open-Meteo API (External) (001-weather-by-location)
+- Go 1.25.5 + `github.com/stretchr/testify` (002-increase-test-coverage)
 
 - Go (Latest Stable) + Standard Library (`flag`, `net/http`, `encoding/json`, `bufio`), Open-Meteo API (External) (001-weather-by-location)
 
@@ -23,6 +24,7 @@ tests/
 Go (Latest Stable): Follow standard conventions
 
 ## Recent Changes
+- 002-increase-test-coverage: Added Go 1.25.5 + `github.com/stretchr/testify`
 - 001-weather-by-location: Added Go (Latest Stable) + Standard Library (`flag`, `net/http`, `encoding/json`, `bufio`), `github.com/stretchr/testify` (Testing), Open-Meteo API (External)
 
 - 001-weather-by-location: Added Go (Latest Stable) + Standard Library (`flag`, `net/http`, `encoding/json`, `bufio`), Open-Meteo API (External)
