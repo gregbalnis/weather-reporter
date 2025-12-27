@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"weather-reporter/src/internal/models"
 
@@ -85,6 +86,15 @@ func TestGetCurrentWeather(t *testing.T) {
 			expected:       nil,
 			expectError:    true,
 		},
+		{
+			name:           "Malformed JSON",
+			lat:            0,
+			lon:            0,
+			mockStatusCode: http.StatusOK,
+			mockResponse:   `{"current": "invalid"}`,
+			expected:       nil,
+			expectError:    true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -109,4 +119,33 @@ func TestGetCurrentWeather(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestGetCurrentWeather_Timeout(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(10 * time.Millisecond)
+	}))
+	defer server.Close()
+
+	client := NewClient(server.Client())
+	client.baseURL = server.URL
+
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
+	defer cancel()
+
+	_, err := client.GetCurrentWeather(ctx, 0, 0)
+	assert.Error(t, err)
+	assert.True(t, 
+		assert.Contains(t, err.Error(), "context deadline exceeded") || 
+		assert.Contains(t, err.Error(), "Client.Timeout exceeded") ||
+		assert.Contains(t, err.Error(), "timeout"),
+		"Error should indicate timeout: %v", err,
+	)
+}
+
+func TestNewClient_Default(t *testing.T) {
+	client := NewClient(nil)
+	assert.NotNil(t, client)
+	assert.NotNil(t, client.httpClient)
+	assert.Equal(t, defaultBaseURL, client.baseURL)
 }

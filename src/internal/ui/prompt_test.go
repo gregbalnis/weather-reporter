@@ -2,6 +2,8 @@ package ui
 
 import (
 	"bytes"
+	"fmt"
+	"os"
 	"strings"
 	"testing"
 
@@ -70,4 +72,34 @@ func TestSelectLocation(t *testing.T) {
 		assert.Contains(t, output, "10. Loc")
 		assert.NotContains(t, output, "11. Loc")
 	})
+}
+
+func TestIsTerminal(t *testing.T) {
+	// Create a temp file
+	tmpfile, err := os.CreateTemp("", "example")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(tmpfile.Name()) // clean up
+	defer tmpfile.Close()
+
+	// It's a file, not a terminal
+	assert.False(t, IsTerminal(tmpfile))
+}
+
+type errorReader struct{}
+
+func (e *errorReader) Read(p []byte) (n int, err error) {
+	return 0, fmt.Errorf("simulated read error")
+}
+
+func TestSelectLocation_ReadError(t *testing.T) {
+	locations := []models.Location{
+		{ID: 1, Name: "London"},
+	}
+	var out bytes.Buffer
+
+	_, err := SelectLocation(locations, &errorReader{}, &out, true)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to read input")
 }

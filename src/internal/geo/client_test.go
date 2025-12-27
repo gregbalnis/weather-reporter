@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"weather-reporter/src/internal/models"
 
@@ -46,6 +47,14 @@ func TestSearch(t *testing.T) {
 			expected:       nil,
 			expectError:    true,
 		},
+		{
+			name:           "Malformed JSON",
+			query:          "BadJSON",
+			mockStatusCode: http.StatusOK,
+			mockResponse:   `{"results": [{"id": 1, "name": "London", "latitude": "invalid"}]}`, // Invalid latitude type
+			expected:       nil,
+			expectError:    true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -75,4 +84,41 @@ func TestSearch(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestSearch_Timeout(t *testing.T) {
+	// Create a server that sleeps longer than the client timeout
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(10 * time.Millisecond)
+	}))
+	defer server.Close()
+
+	client := NewClient(server.Client())
+	client.baseURL = server.URL
+
+	// Create a context with a very short timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
+	defer cancel()
+
+	_, err := client.Search(ctx, "Timeout")
+	assert.Error(t, err)
+	// The error message might vary slightly depending on where the timeout happens (dial, read, etc.)
+	// but it should be a context error or a net error wrapping it.
+	// "context deadline exceeded" is standard for ctx timeouts.
+	// However, httptest server client might behave slightly differently.
+	// Let's check if it's an error at all first (done above).
+	// And check for common timeout indicators.
+	assert.True(t, 
+		assert.Contains(t, err.Error(), "context deadline exceeded") || 
+		assert.Contains(t, err.Error(), "Client.Timeout exceeded") ||
+		assert.Contains(t, err.Error(), "timeout"),
+		"Error should indicate timeout: %v", err,
+	)
+}
+
+func TestNewClient_Default(t *testing.T) {
+	client := NewClient(nil)
+	assert.NotNil(t, client)
+	assert.NotNil(t, client.httpClient)
+	assert.Equal(t, defaultBaseURL, client.baseURL)
 }

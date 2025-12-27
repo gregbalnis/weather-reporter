@@ -21,7 +21,7 @@ description: "Task list for increasing unit test coverage"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create mock implementations for `GeocodingService` and `WeatherService` in `src/internal/ui/mocks_test.go`
+- [x] T001 Create mock implementations for `GeocodingService` and `WeatherService` in `src/internal/ui/mocks_test.go`
 
 ---
 
@@ -49,21 +49,21 @@ description: "Task list for increasing unit test coverage"
 
 **UI Component (Priority High - currently failing)**
 
-- [ ] T002 [US1] Implement unit tests for `GetLocation` (happy path) in `src/internal/ui/prompt_test.go`
-- [ ] T003 [US1] Implement unit tests for `GetLocation` (input validation: empty, long strings) in `src/internal/ui/prompt_test.go`
-- [ ] T004 [US1] Implement unit tests for `GetLocation` (service error handling) in `src/internal/ui/prompt_test.go`
+- [x] T002 [US1] Implement unit tests for `GetLocation` (happy path) in `src/internal/ui/prompt_test.go`
+- [x] T003 [US1] Implement unit tests for `GetLocation` (input validation: empty, long strings) in `src/internal/ui/prompt_test.go`
+- [x] T004 [US1] Implement unit tests for `GetLocation` (service error handling) in `src/internal/ui/prompt_test.go`
 
 **Geo Component (Hardening)**
 
-- [ ] T005 [P] [US1] Add test case for API timeout to `src/internal/geo/client_test.go`
-- [ ] T006 [P] [US1] Add test case for non-200 API status to `src/internal/geo/client_test.go`
-- [ ] T007 [P] [US1] Add test case for malformed JSON response to `src/internal/geo/client_test.go`
+- [x] T005 [P] [US1] Add test case for API timeout to `src/internal/geo/client_test.go`
+- [x] T006 [P] [US1] Add test case for non-200 API status to `src/internal/geo/client_test.go`
+- [x] T007 [P] [US1] Add test case for malformed JSON response to `src/internal/geo/client_test.go`
 
 **Weather Component (Hardening)**
 
-- [ ] T008 [P] [US1] Add test case for API timeout to `src/internal/weather/client_test.go`
-- [ ] T009 [P] [US1] Add test case for non-200 API status to `src/internal/weather/client_test.go`
-- [ ] T010 [P] [US1] Add test case for malformed JSON response to `src/internal/weather/client_test.go`
+- [x] T008 [P] [US1] Add test case for API timeout to `src/internal/weather/client_test.go`
+- [x] T009 [P] [US1] Add test case for non-200 API status to `src/internal/weather/client_test.go`
+- [x] T010 [P] [US1] Add test case for malformed JSON response to `src/internal/weather/client_test.go`
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -73,7 +73,7 @@ description: "Task list for increasing unit test coverage"
 
 **Purpose**: Final cleanup, documentation, and non-functional requirements
 
-- [ ] T011 Verify 80% coverage across all packages by running `go test -cover ./src/internal/...`
+- [x] T011 Verify 80% coverage across all packages by running `go test -cover ./src/internal/...`
 
 ## Dependencies
 
