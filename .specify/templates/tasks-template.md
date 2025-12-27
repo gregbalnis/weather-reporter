@@ -249,3 +249,11 @@ With multiple developers:
 - Commit after each task or logical group
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
+
+## Final Phase: Polish & Cross-Cutting Concerns
+
+**Purpose**: Final cleanup, documentation, and non-functional requirements
+
+- [ ] T### Update README.md to reflect current project state (Required by Constitution)
+- [ ] T### [P] Verify all tests pass and coverage meets requirements
+- [ ] T### [P] Ensure all linter warnings are resolved

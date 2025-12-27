@@ -1,8 +1,8 @@
 <!--
 Sync Impact Report:
-- Version change: 1.0.0 -> 1.1.0
-- List of modified principles: Testing Standards (added 80% coverage requirement)
-- Added sections: None
+- Version change: 1.1.0 -> 1.2.0
+- List of modified principles: Documentation Standards (added README requirement)
+- Added sections: V. Documentation Standards
 - Removed sections: None
 - Templates requiring updates: ✅ tasks-template.md
 - Follow-up TODOs: None
@@ -22,6 +22,9 @@ The CLI and output MUST be consistent and predictable. Use standard flags and ar
 
 ### IV. Performance Requirements
 The application MUST be efficient with resources (CPU, Memory). Avoid unnecessary allocations in hot paths. Network operations MUST have timeouts. Performance critical paths SHOULD be benchmarked. Latency for user-facing operations SHOULD be minimized.
+
+### V. Documentation Standards
+A `README.md` file is REQUIRED at the root of the repository. It MUST document the current state of the project, including what it does, why it is useful, how to get started, and how to contribute. This file MUST be updated after implementation is complete and before a Pull Request is created to reflect any changes in functionality, usage, or configuration.
 
 ## Technical Stack
 
@@ -47,4 +50,4 @@ This Constitution supersedes all other practices. Amendments require documentati
 3.  New dependencies MUST be vetted for license and maintenance status.
 4.  Versioning follows Semantic Versioning (SemVer).
 
-**Version**: 1.1.0 | **Ratified**: 2025-12-25 | **Last Amended**: 2025-12-27
+**Version**: 1.2.0 | **Ratified**: 2025-12-25 | **Last Amended**: 2025-12-27
