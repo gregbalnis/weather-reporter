@@ -1,9 +1,13 @@
 # Weather Reporter
 
-![CI](https://github.com/owner/weather-reporter/actions/workflows/ci.yml/badge.svg)
-![Release](https://img.shields.io/github/v/release/owner/weather-reporter)
+<p align="center">
+    <a href="https://github.com/gregbalnis/weather-reporter/actions/workflows/release.yml"><img src="https://github.com/gregbalnis/weather-reporter/actions/workflows/release.yml/badge.svg" alt="Release"/></a>
+    <a href="https://github.com/gregbalnis/weather-reporter/blob/main/LICENSE"><img src="https://img.shields.io/github/license/gregbalnis/weather-reporter" alt="License"/></a>
+</p>
 
 Weather Reporter is a command-line interface (CLI) tool written in Go that fetches current weather information for any location using the [Open-Meteo API](https://open-meteo.com/).
+
+It is an experiment in specification-driven development, using [github/spec-kit](https://github.com/github/spec-kit), currently in v0.0.90.
 
 ## Features
 
@@ -27,8 +31,9 @@ Weather Reporter is a command-line interface (CLI) tool written in Go that fetch
    ```
 
 2. Build the binary:
+
    ```bash
-   go build -o weather-reporter ./src/cmd/weather-reporter
+   make
    ```
 
 ## Usage
@@ -38,7 +43,7 @@ Weather Reporter is a command-line interface (CLI) tool written in Go that fetch
 Get the weather for a specific location:
 
 ```bash
-./weather-reporter "New York"
+./bin/weather-reporter "New York"
 ```
 
 **Output:**
@@ -56,7 +61,7 @@ Humidity:             60 %
 If multiple locations match your query, the tool will ask you to select the correct one:
 
 ```bash
-$ ./weather-reporter London
+$ ./bin/weather-reporter London
 Multiple locations found:
 1. London, United Kingdom (England)
 2. London, Canada (Ontario)
@@ -70,7 +75,7 @@ Select location [1-10]: 1
 If you run the tool in a non-interactive environment (e.g., piped to another command), it will list the matches and exit with an error to prevent hanging:
 
 ```bash
-$ ./weather-reporter London | cat
+$ ./bin/weather-reporter London | cat
 Multiple locations found:
 1. London, United Kingdom (England)
 ...
@@ -84,7 +89,7 @@ Error selecting location: multiple locations found, please be more specific
 To run the unit tests:
 
 ```bash
-go test ./...
+make test
 ```
 
 ### Project Structure
