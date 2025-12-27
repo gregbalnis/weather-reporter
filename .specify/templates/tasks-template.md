@@ -257,3 +257,4 @@ With multiple developers:
 - [ ] T### Update README.md to reflect current project state (Required by Constitution)
 - [ ] T### [P] Verify all tests pass and coverage meets requirements
 - [ ] T### [P] Ensure all linter warnings are resolved
+- [ ] T### [P] Verify build reproducibility and version metadata embedding (Required by Constitution)

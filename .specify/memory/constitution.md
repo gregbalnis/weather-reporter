@@ -1,8 +1,8 @@
 <!--
 Sync Impact Report:
-- Version change: 1.1.0 -> 1.2.0
-- List of modified principles: Documentation Standards (added README requirement)
-- Added sections: V. Documentation Standards
+- Version change: 1.2.0 -> 1.3.0
+- List of modified principles: Added Release & Build Standards
+- Added sections: VI. Release & Build Standards
 - Removed sections: None
 - Templates requiring updates: ✅ tasks-template.md
 - Follow-up TODOs: None
@@ -25,6 +25,9 @@ The application MUST be efficient with resources (CPU, Memory). Avoid unnecessar
 
 ### V. Documentation Standards
 A `README.md` file is REQUIRED at the root of the repository. It MUST document the current state of the project, including what it does, why it is useful, how to get started, and how to contribute. This file MUST be updated after implementation is complete and before a Pull Request is created to reflect any changes in functionality, usage, or configuration.
+
+### VI. Release & Build Standards
+Builds MUST be reproducible, secure, and automated. Releases MUST be triggered by tags following Semantic Versioning (SemVer). The release pipeline MUST enforce linting and testing before publishing. Artifacts MUST include version metadata (embedded at build time) and be cross-compiled for all supported target platforms. Integrity checks (e.g., checksums) MUST be provided for all published artifacts.
 
 ## Technical Stack
 
@@ -50,4 +53,4 @@ This Constitution supersedes all other practices. Amendments require documentati
 3.  New dependencies MUST be vetted for license and maintenance status.
 4.  Versioning follows Semantic Versioning (SemVer).
 
-**Version**: 1.2.0 | **Ratified**: 2025-12-25 | **Last Amended**: 2025-12-27
+**Version**: 1.3.0 | **Ratified**: 2025-12-25 | **Last Amended**: 2025-12-27
