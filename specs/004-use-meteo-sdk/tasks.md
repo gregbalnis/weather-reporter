@@ -12,7 +12,7 @@
 *Goal: Establish interfaces and SDK integration layer.*
 
 - [ ] T002 Define `WeatherResponse` interface with `QuantityOf...` accessors in `internal/models/interfaces.go`
-- [ ] T003 Implement SDK client wrapper in `internal/weather/client.go` enforcing 10s timeout
+- [ ] T003 Implement SDK client wrapper in `internal/weather/client.go` enforcing 10s timeout and handling nil returns
 
 ## Phase 3: User Story 1 - Maintain Existing Weather Retrieval Functionality
 *Goal: Switch application to use SDK without regression.*
@@ -20,7 +20,7 @@
 
 - [ ] T004 [US1] Update UI display logic in `internal/ui/prompt.go` to use `WeatherResponse` interface
 - [ ] T005 [US1] Refactor `cmd/weather-reporter/main.go` to use new SDK client
-- [ ] T006 [US1] Add integration test for SDK client in `internal/weather/integration_test.go`
+- [ ] T006 [US1] Add integration test for SDK client in `internal/weather/integration_test.go` (success, timeout, error propagation)
 
 ## Phase 4: User Story 2 - Reduce Maintenance Burden
 *Goal: Remove legacy code and tests.*
