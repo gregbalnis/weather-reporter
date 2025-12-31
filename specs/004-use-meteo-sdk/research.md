@@ -159,3 +159,20 @@
   - **Mitigation**: Add integration tests for SDK usage paths
 
 **Next Phase**: Phase 1 - Design (data-model.md, contracts/, quickstart.md)
+
+---
+
+### Q5: Unit of Measurement Handling
+
+**Question**: How does the SDK handle units of measurement? Can we simplify our unit formatting logic?
+
+**Research Approach**:
+- Check SDK documentation for unit handling features
+- Verify if SDK provides formatted strings
+
+**Findings**:
+- **Quantity Accessors**: The SDK provides `QuantityOf...` accessors (e.g., `QuantityOfTemperature()`) on the weather response object.
+- **Formatted Output**: These accessors return a string containing both the value and the unit (e.g., "10.5°C").
+- **Simplification**: Using these accessors eliminates the need for manual unit concatenation in our code.
+
+**Decision**: Use `QuantityOf...` accessors for all weather attributes to ensure consistent unit formatting and simplify the codebase.
