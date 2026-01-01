@@ -94,10 +94,8 @@ func TestGetCurrentWeather(t *testing.T) {
 	if got := resp.QuantityOfApparentTemperature(); got != "-2.8°C" {
 		t.Errorf("QuantityOfApparentTemperature() = %v, want %v", got, "-2.8°C")
 	}
-	// Note: Exact formatting depends on the SDK implementation.
-	// If these fail, I will adjust the expected values.
-	if got := resp.QuantityOfPrecipitation(); got != "0mm" && got != "0.00mm" {
-		t.Logf("QuantityOfPrecipitation() = %v", got)
+	if got := resp.QuantityOfPrecipitation(); got != "0.0 mm" {
+		t.Errorf("QuantityOfPrecipitation() = %v, want %v", got, "0.0 mm")
 	}
 	if got := resp.QuantityOfCloudCover(); got != "99%" {
 		t.Errorf("QuantityOfCloudCover() = %v, want %v", got, "99%")
