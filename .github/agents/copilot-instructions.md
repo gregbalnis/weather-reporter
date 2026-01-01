@@ -27,8 +27,8 @@ Go (Latest Stable): Follow standard conventions
 
 ## Recent Changes
 - 004-use-meteo-sdk: Added Go 1.25.5 + `github.com/gregbalnis/open-meteo-weather-sdk`
+- 004-use-meteo-sdk: Added Go 1.25.5 + `github.com/gregbalnis/open-meteo-weather-sdk`
 - 004-use-meteo-sdk: Added Go 1.25.5
-- 003-automated-delivery-pipeline: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 
 
 <!-- MANUAL ADDITIONS START -->

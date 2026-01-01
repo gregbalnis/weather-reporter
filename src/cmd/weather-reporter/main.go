@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -22,28 +23,45 @@ var (
 )
 
 func main() {
-	versionFlag := flag.Bool("version", false, "Print version information")
-	flag.Parse()
-
-	if *versionFlag {
-		fmt.Printf("weather-reporter version %s\n", Version)
-		fmt.Printf("commit: %s\n", Commit)
-		fmt.Printf("built at: %s\n", Date)
-		os.Exit(0)
-	}
-
-	args := flag.Args()
-
-	if len(args) == 0 {
-		fmt.Println("Usage: weather-reporter <location>")
-		os.Exit(1)
-	}
-
-	locationName := strings.Join(args, " ")
-
 	// Initialize services
 	geoClient := geo.NewClient(nil)
 	weatherClient := weather.NewClient(nil)
+
+	os.Exit(run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, geoClient, weatherClient, defaultInteractiveChecker))
+}
+
+type interactiveChecker func(io.Reader) bool
+
+func defaultInteractiveChecker(r io.Reader) bool {
+	if f, ok := r.(*os.File); ok {
+		return ui.IsTerminal(f)
+	}
+	return false
+}
+
+func run(args []string, stdin io.Reader, stdout, stderr io.Writer, geoClient models.GeocodingService, weatherClient models.WeatherService, isInteractive interactiveChecker) int {
+	fs := flag.NewFlagSet("weather-reporter", flag.ContinueOnError)
+	fs.SetOutput(stderr)
+	versionFlag := fs.Bool("version", false, "Print version information")
+
+	if err := fs.Parse(args); err != nil {
+		return 1
+	}
+
+	if *versionFlag {
+		_, _ = fmt.Fprintf(stdout, "weather-reporter version %s\n", Version)
+		_, _ = fmt.Fprintf(stdout, "commit: %s\n", Commit)
+		_, _ = fmt.Fprintf(stdout, "built at: %s\n", Date)
+		return 0
+	}
+
+	locationArgs := fs.Args()
+	if len(locationArgs) == 0 {
+		_, _ = fmt.Fprintln(stdout, "Usage: weather-reporter <location>")
+		return 1
+	}
+
+	locationName := strings.Join(locationArgs, " ")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -51,13 +69,13 @@ func main() {
 	// 1. Search for location
 	locations, err := geoClient.Search(ctx, locationName)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error searching for location: %v\n", err)
-		os.Exit(1)
+		_, _ = fmt.Fprintf(stderr, "Error searching for location: %v\n", err)
+		return 1
 	}
 
 	if len(locations) == 0 {
-		fmt.Printf("Location not found: %s\n", locationName)
-		os.Exit(0)
+		_, _ = fmt.Fprintf(stdout, "Location not found: %s\n", locationName)
+		return 0
 	}
 
 	var selectedLocation models.Location
@@ -65,35 +83,26 @@ func main() {
 	if len(locations) == 1 {
 		selectedLocation = locations[0]
 	} else {
-		isInteractive := ui.IsTerminal(os.Stdin)
-		selectedLocation, err = ui.SelectLocation(locations, os.Stdin, os.Stdout, isInteractive)
+		interactive := isInteractive(stdin)
+		selectedLocation, err = ui.SelectLocation(locations, stdin, stdout, interactive)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error selecting location: %v\n", err)
-			os.Exit(1)
+			_, _ = fmt.Fprintf(stderr, "Error selecting location: %v\n", err)
+			return 1
 		}
 	}
 
 	// 2. Get Weather
 	weatherData, err := weatherClient.GetCurrentWeather(ctx, selectedLocation.Latitude, selectedLocation.Longitude)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error fetching weather: %v\n", err)
-		os.Exit(1)
+		_, _ = fmt.Fprintf(stderr, "Error fetching weather: %v\n", err)
+		return 1
 	}
 
 	// 3. Print Weather
-	printWeather(selectedLocation, weatherData)
-}
+	if err := ui.PrintWeather(stdout, selectedLocation, weatherData); err != nil {
+		_, _ = fmt.Fprintf(stderr, "Error printing weather: %v\n", err)
+		return 1
+	}
 
-func printWeather(loc models.Location, w *models.WeatherResponse) {
-	fmt.Printf("Weather for %s, %s (%s)\n", loc.Name, loc.Country, loc.Region)
-	fmt.Println("------------------------------------------------")
-	fmt.Printf("Temperature:          %.1f %s\n", w.Current.Temperature, w.CurrentUnits.Temperature)
-	fmt.Printf("Apparent Temperature: %.1f %s\n", w.Current.ApparentTemp, w.CurrentUnits.ApparentTemp)
-	fmt.Printf("Humidity:             %d %s\n", w.Current.Humidity, w.CurrentUnits.Humidity)
-	fmt.Printf("Precipitation:        %.1f %s\n", w.Current.Precipitation, w.CurrentUnits.Precipitation)
-	fmt.Printf("Cloud Cover:          %d %s\n", w.Current.CloudCover, w.CurrentUnits.CloudCover)
-	fmt.Printf("Pressure:             %.1f %s\n", w.Current.Pressure, w.CurrentUnits.Pressure)
-	fmt.Printf("Wind Speed:           %.1f %s\n", w.Current.WindSpeed, w.CurrentUnits.WindSpeed)
-	fmt.Printf("Wind Direction:       %d %s\n", w.Current.WindDirection, w.CurrentUnits.WindDirection)
-	fmt.Printf("Wind Gusts:           %.1f %s\n", w.Current.WindGusts, w.CurrentUnits.WindGusts)
+	return 0
 }

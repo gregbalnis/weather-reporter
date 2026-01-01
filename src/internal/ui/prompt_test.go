@@ -103,3 +103,56 @@ func TestSelectLocation_ReadError(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to read input")
 }
+
+type mockWeatherResponse struct{}
+
+func (m mockWeatherResponse) QuantityOfTemperature() string         { return "20°C" }
+func (m mockWeatherResponse) QuantityOfHumidity() string            { return "50%" }
+func (m mockWeatherResponse) QuantityOfApparentTemperature() string { return "18°C" }
+func (m mockWeatherResponse) QuantityOfPrecipitation() string       { return "0mm" }
+func (m mockWeatherResponse) QuantityOfCloudCover() string          { return "10%" }
+func (m mockWeatherResponse) QuantityOfPressure() string            { return "1013hPa" }
+func (m mockWeatherResponse) QuantityOfWindSpeed() string           { return "10km/h" }
+func (m mockWeatherResponse) QuantityOfWindDirection() string       { return "N" }
+func (m mockWeatherResponse) QuantityOfWindGusts() string           { return "15km/h" }
+
+func TestPrintWeather(t *testing.T) {
+loc := models.Location{
+Name:    "Test City",
+Country: "Test Country",
+Region:  "Test Region",
+}
+w := mockWeatherResponse{}
+var out bytes.Buffer
+
+err := PrintWeather(&out, loc, w)
+assert.NoError(t, err)
+
+output := out.String()
+assert.Contains(t, output, "Weather for Test City, Test Country (Test Region)")
+assert.Contains(t, output, "Temperature:          20°C")
+assert.Contains(t, output, "Apparent Temperature: 18°C")
+assert.Contains(t, output, "Humidity:             50%")
+assert.Contains(t, output, "Precipitation:        0mm")
+assert.Contains(t, output, "Cloud Cover:          10%")
+assert.Contains(t, output, "Pressure:             1013hPa")
+assert.Contains(t, output, "Wind Speed:           10km/h")
+assert.Contains(t, output, "Wind Direction:       N")
+assert.Contains(t, output, "Wind Gusts:           15km/h")
+}
+
+type errorWriter struct{}
+
+func (e errorWriter) Write(p []byte) (n int, err error) {
+return 0, fmt.Errorf("write error")
+}
+
+func TestPrintWeather_Error(t *testing.T) {
+loc := models.Location{Name: "Test"}
+w := mockWeatherResponse{}
+out := errorWriter{}
+
+err := PrintWeather(out, loc, w)
+assert.Error(t, err)
+assert.Equal(t, "write error", err.Error())
+}
