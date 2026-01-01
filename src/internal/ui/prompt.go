@@ -66,3 +66,41 @@ func printLocations(out io.Writer, locations []models.Location) {
 		_, _ = fmt.Fprintf(out, "%d. %s, %s (%s)\n", i+1, loc.Name, loc.Country, loc.Region)
 	}
 }
+
+// PrintWeather prints the weather information to the output writer.
+func PrintWeather(out io.Writer, loc models.Location, w models.WeatherResponse) error {
+	if _, err := fmt.Fprintf(out, "Weather for %s, %s (%s)\n", loc.Name, loc.Country, loc.Region); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintln(out, "------------------------------------------------"); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(out, "Temperature:          %s\n", w.QuantityOfTemperature()); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(out, "Apparent Temperature: %s\n", w.QuantityOfApparentTemperature()); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(out, "Humidity:             %s\n", w.QuantityOfHumidity()); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(out, "Precipitation:        %s\n", w.QuantityOfPrecipitation()); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(out, "Cloud Cover:          %s\n", w.QuantityOfCloudCover()); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(out, "Pressure:             %s\n", w.QuantityOfPressure()); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(out, "Wind Speed:           %s\n", w.QuantityOfWindSpeed()); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(out, "Wind Direction:       %s\n", w.QuantityOfWindDirection()); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(out, "Wind Gusts:           %s\n", w.QuantityOfWindGusts()); err != nil {
+		return err
+	}
+	return nil
+}

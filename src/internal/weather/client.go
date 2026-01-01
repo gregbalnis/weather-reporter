@@ -3,23 +3,18 @@ package weather
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strconv"
-	"strings"
 	"time"
 
 	"weather-reporter/src/internal/models"
-)
 
-const defaultBaseURL = "https://api.open-meteo.com/v1"
+	meteosdk "github.com/gregbalnis/open-meteo-weather-sdk"
+)
 
 // Client is a client for the weather API.
 type Client struct {
-	httpClient *http.Client
-	baseURL    string
+	sdkClient *meteosdk.Client
 }
 
 // NewClient creates a new weather client.
@@ -31,58 +26,67 @@ func NewClient(httpClient *http.Client) *Client {
 		}
 	}
 	return &Client{
-		httpClient: httpClient,
-		baseURL:    defaultBaseURL,
+		sdkClient: meteosdk.NewClient(meteosdk.WithHTTPClient(httpClient)),
 	}
 }
 
 // GetCurrentWeather fetches the current weather for the given coordinates.
-func (c *Client) GetCurrentWeather(ctx context.Context, lat, lon float64) (*models.WeatherResponse, error) {
-	u, err := url.Parse(c.baseURL + "/forecast")
+func (c *Client) GetCurrentWeather(ctx context.Context, lat, lon float64) (models.WeatherResponse, error) {
+	resp, err := c.sdkClient.GetCurrentWeather(ctx, lat, lon)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse base URL: %w", err)
+		return nil, err
 	}
-
-	q := u.Query()
-	q.Set("latitude", strconv.FormatFloat(lat, 'f', -1, 64))
-	q.Set("longitude", strconv.FormatFloat(lon, 'f', -1, 64))
-
-	currentVars := []string{
-		"temperature_2m",
-		"relative_humidity_2m",
-		"apparent_temperature",
-		"precipitation",
-		"cloud_cover",
-		"surface_pressure",
-		"wind_speed_10m",
-		"wind_direction_10m",
-		"wind_gusts_10m",
+	if resp == nil {
+		return nil, fmt.Errorf("received nil response from SDK")
 	}
-	q.Set("current", strings.Join(currentVars, ","))
-	q.Set("wind_speed_unit", "kmh")
-	q.Set("temperature_unit", "celsius")
+	return &weatherResponseAdapter{resp}, nil
+}
 
-	u.RawQuery = q.Encode()
+type weatherResponseAdapter struct {
+	*meteosdk.CurrentWeather
+}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
+// QuantityOfTemperature returns the temperature.
+func (w *weatherResponseAdapter) QuantityOfTemperature() string {
+	return w.CurrentWeather.QuantityOfTemperature()
+}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute request: %w", err)
-	}
-	defer func() { _ = resp.Body.Close() }()
+// QuantityOfHumidity returns the humidity.
+func (w *weatherResponseAdapter) QuantityOfHumidity() string {
+	return w.QuantityOfRelativeHumidity()
+}
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
+// QuantityOfApparentTemperature returns the apparent temperature.
+func (w *weatherResponseAdapter) QuantityOfApparentTemperature() string {
+	return w.CurrentWeather.QuantityOfApparentTemperature()
+}
 
-	var weatherResp models.WeatherResponse
-	if err := json.NewDecoder(resp.Body).Decode(&weatherResp); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
-	}
+// QuantityOfPrecipitation returns the precipitation.
+func (w *weatherResponseAdapter) QuantityOfPrecipitation() string {
+	return w.CurrentWeather.QuantityOfPrecipitation()
+}
 
-	return &weatherResp, nil
+// QuantityOfCloudCover returns the cloud cover.
+func (w *weatherResponseAdapter) QuantityOfCloudCover() string {
+	return w.CurrentWeather.QuantityOfCloudCover()
+}
+
+// QuantityOfPressure returns the pressure.
+func (w *weatherResponseAdapter) QuantityOfPressure() string {
+	return w.QuantityOfSurfacePressure()
+}
+
+// QuantityOfWindSpeed returns the wind speed.
+func (w *weatherResponseAdapter) QuantityOfWindSpeed() string {
+	return w.CurrentWeather.QuantityOfWindSpeed()
+}
+
+// QuantityOfWindDirection returns the wind direction.
+func (w *weatherResponseAdapter) QuantityOfWindDirection() string {
+	return w.CurrentWeather.QuantityOfWindDirection()
+}
+
+// QuantityOfWindGusts returns the wind gusts.
+func (w *weatherResponseAdapter) QuantityOfWindGusts() string {
+	return w.CurrentWeather.QuantityOfWindGusts()
 }

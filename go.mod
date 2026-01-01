@@ -2,7 +2,10 @@ module weather-reporter
 
 go 1.25.5
 
-require github.com/stretchr/testify v1.11.1
+require (
+	github.com/gregbalnis/open-meteo-weather-sdk v0.2.0
+	github.com/stretchr/testify v1.11.1
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

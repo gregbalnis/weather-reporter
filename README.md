@@ -5,7 +5,7 @@
     <a href="https://github.com/gregbalnis/weather-reporter/blob/main/LICENSE"><img src="https://img.shields.io/github/license/gregbalnis/weather-reporter" alt="License"/></a>
 </p>
 
-Weather Reporter is a command-line interface (CLI) tool written in Go that fetches current weather information for any location using the [Open-Meteo API](https://open-meteo.com/).
+Weather Reporter is a command-line interface (CLI) tool written in Go that fetches current weather information for any location using the [Open-Meteo API](https://open-meteo.com/) via the [Open-Meteo Weather SDK](https://github.com/gregbalnis/open-meteo-weather-sdk).
 
 It is an experiment in specification-driven development, using [github/spec-kit](https://github.com/github/spec-kit), currently in v0.0.90.
 
