@@ -51,12 +51,14 @@ func NewClient(httpClient *http.Client) models.GeocodingService {
 //   - Any other errors: "Unable to search locations. Please try again."
 //
 // Parameters:
-//   ctx: Context for cancellation and timeouts
-//   name: Location name to search for (e.g., "London", "New York")
+//
+//	ctx: Context for cancellation and timeouts
+//	name: Location name to search for (e.g., "London", "New York")
 //
 // Returns:
-//   []Location: Slice of locations matching the search (may be empty if no matches)
-//   error: Non-nil if search fails (always with user-friendly message)
+//
+//	[]Location: Slice of locations matching the search (may be empty if no matches)
+//	error: Non-nil if search fails (always with user-friendly message)
 func (c *Client) Search(ctx context.Context, name string) ([]models.Location, error) {
 	// Implementation contract:
 	// 1. Call SDK with context
@@ -75,12 +77,13 @@ func (c *Client) Search(ctx context.Context, name string) ([]models.Location, er
 // SDK's location type to our Location struct.
 //
 // Expected mapping:
-//   SDK.ID        → Location.ID (int)
-//   SDK.Name      → Location.Name (string)
-//   SDK.Latitude  → Location.Latitude (float64)
-//   SDK.Longitude → Location.Longitude (float64)
-//   SDK.Country   → Location.Country (string)
-//   SDK.Admin1    → Location.Region (string) - note field name difference
+//
+//	SDK.ID        → Location.ID (int)
+//	SDK.Name      → Location.Name (string)
+//	SDK.Latitude  → Location.Latitude (float64)
+//	SDK.Longitude → Location.Longitude (float64)
+//	SDK.Country   → Location.Country (string)
+//	SDK.Admin1    → Location.Region (string) - note field name difference
 //
 // Returns error if required fields are missing or invalid.
 func mapSDKLocation(sdkLocation interface{}) (models.Location, error) {
@@ -100,10 +103,11 @@ func mapSDKLocation(sdkLocation interface{}) (models.Location, error) {
 // without exposing technical implementation details or infrastructure info.
 //
 // Error mapping strategy:
-//   SDK TimeoutError    → "Search took too long. Please try again."
-//   SDK NetworkError    → "Unable to search locations. Please try again."
-//   SDK ServiceError    → "Unable to search locations. Please try again."
-//   Any other error     → "Unable to search locations. Please try again."
+//
+//	SDK TimeoutError    → "Search took too long. Please try again."
+//	SDK NetworkError    → "Unable to search locations. Please try again."
+//	SDK ServiceError    → "Unable to search locations. Please try again."
+//	Any other error     → "Unable to search locations. Please try again."
 //
 // Returns nil if input error is nil.
 func convertSDKError(err error) error {
