@@ -104,7 +104,7 @@ type GeocodingService interface {
 
 ## Implementation Phases
 
-### Phase 0: Research & Design
+### Phase 1: Research & Design
 
 **Duration**: 1 day  
 **Status**: To Start
@@ -126,7 +126,7 @@ type GeocodingService interface {
 - [ ] Integration test plan defined
 - [ ] All implementation unknowns resolved
 
-### Phase 1: Core Implementation
+### Phase 2: Core Implementation
 
 **Duration**: 2-3 days  
 **Status**: To Start
@@ -157,7 +157,7 @@ type GeocodingService interface {
 - [ ] Error messages are user-friendly (no technical details)
 - [ ] Code review approved
 
-### Phase 2: Quality Assurance & Deployment
+### Phase 3: Quality Assurance & Deployment
 
 **Duration**: 1 day  
 **Status**: To Start
@@ -250,7 +250,7 @@ NetworkError            → "Unable to search locations. Please try again."
 
 **File**: `src/internal/geo/integration_test.go` (new)
 
-Tests against the real Open Meteo Geocoding API (or can be marked with `+build integration` for optional running):
+Tests against the real Open Meteo Geocoding API (required; may be skipped when running with `-short` if network unavailable):
 
 ```go
 func TestIntegration_LocationSearchContract(t *testing.T) {
@@ -347,19 +347,19 @@ time ./bin/weather-reporter London
 
 ## Next Steps
 
-1. **Phase 0 (Research & Design)**
+1. **Phase 1 (Research & Design)**
    - Research open-meteo-geocoding-sdk API and types
    - Create data-model.md with mapping strategy
    - Define contracts for SDK adapter
    - Create research.md documenting findings
 
-2. **Phase 1 (Implementation)**
+2. **Phase 2 (Implementation)**
    - Implement SDK adapter in geo/client.go
    - Add integration test
    - Update go.mod
    - Run and verify all tests
 
-3. **Phase 2 (Quality & Deployment)**
+3. **Phase 3 (Quality & Deployment)**
    - Final verification
    - Documentation updates
    - Prepare for deployment

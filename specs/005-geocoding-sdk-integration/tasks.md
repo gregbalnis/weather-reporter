@@ -32,6 +32,14 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Verify SDK supports: max 10 results, English language, timeout configuration
   - **Success**: All unknowns answered, notes in research.md
 
+- [ ] T001.5 [P] Capture baseline performance metrics (pre-SDK)
+  - **File**: `specs/005-geocoding-sdk-integration/research.md`
+  - **Details**:
+    - Run 10 sample queries (London, San Francisco, Tokyo) with current implementation
+    - Record wall-clock timings (avg/p90) on local machine
+    - Note test environment (network, machine specs)
+  - **Success**: Baseline timings recorded to compare in T015
+
 - [ ] T002 [P] Analyze type mappings between SDK and Location model
   - **File**: `specs/005-geocoding-sdk-integration/data-model.md` (reference)
   - **Details**:
@@ -40,6 +48,14 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Determine type conversions needed
     - Plan mapping function signature
   - **Success**: Type mapping strategy documented and validated
+
+- [ ] T002.5 [P] Finalize SDK adapter contract
+  - **File**: `specs/005-geocoding-sdk-integration/contracts/sdk-adapter.go`
+  - **Details**:
+    - Define adapter struct implementing `GeocodingService`
+    - Constructor signature: `NewClient(httpClient *http.Client) GeocodingService`
+    - Document mapping and error conversion touchpoints
+  - **Success**: Contract complete and reflects planned adapter pattern
 
 - [ ] T003 [P] Define error handling mapping from SDK errors to user-friendly messages
   - **File**: `specs/005-geocoding-sdk-integration/data-model.md` (reference)
@@ -80,11 +96,11 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
 - [ ] T006 [P] Update `go.mod` to add SDK dependency
   - **File**: `go.mod`
   - **Details**:
-    - Run: `go get github.com/gregbalnis/open-meteo-geocoding-sdk@[version]`
+    - Run: `go get github.com/gregbalnis/open-meteo-geocoding-sdk@[pinned-version-from-T001]`
     - Pin to specific version (not @latest)
     - Run: `go mod tidy`
     - Verify no version conflicts
-  - **Success**: SDK dependency added and pinned in go.mod
+  - **Success**: go.mod/go.sum contain pinned SDK version (from T001 discovery)
 
 - [ ] T007 Create mapping function from SDK Location to internal Location model
   - **File**: `src/internal/geo/client.go`
@@ -112,7 +128,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
   - **Details**:
     - Replace custom HTTP implementation with SDK client wrapper
     - Client struct with sdkClient field
-    - `NewClient(httpClient *http.Client) *Client` constructor
+    - `NewClient(httpClient *http.Client) GeocodingService` constructor
     - Import SDK package
     - Initialize SDK client with httpClient if provided
     - Use default timeout (10s) if httpClient nil
@@ -130,6 +146,13 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Respect context cancellation and timeouts
   - **Dependencies**: Task T007 (mapping), T008 (error conversion), T009 (client struct)
   - **Success**: Search method fully functional with SDK
+
+- [ ] T010.5 [P] Benchmark SDK adapter overhead (optional)
+  - **File**: `src/internal/geo/client_test.go` (benchmark section)
+  - **Details**:
+    - Add Go benchmark comparing SDK adapter vs. mock client for a sample query
+    - Ensure benchmark respects timeouts and does not hit network
+  - **Success**: Baseline adapter overhead understood before rollout
 
 - [ ] T011 Run existing unit tests to verify compatibility
   - **File**: `src/internal/geo/client_test.go` (no changes to file)
@@ -149,7 +172,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
   - **File**: `src/internal/geo/integration_test.go`
   - **Details**:
     - Run: `go test ./src/internal/geo -v -run Integration`
-    - Run with network access (not with -short flag)
+    - Requires network; use `-short` to skip when offline/CI without network
     - Verify all integration test cases pass
     - Tests validate: London search, multiple results, result limits, complete data
   - **Dependencies**: Task T005 (integration test created), T010 (Search method)
@@ -219,6 +242,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
   - **File**: `specs/005-geocoding-sdk-integration/contracts/sdk-adapter.go`
   - **Details**:
     - Compare implementation against contract
+    - Verify exported APIs (`NewClient`, `Search`) have godoc per Constitution Principle I
     - Verify all functions documented
     - Verify error handling matches specification
     - Verify interface implementation is complete
