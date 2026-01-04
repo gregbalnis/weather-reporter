@@ -22,7 +22,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
 **Purpose**: Analyze SDK and define implementation strategy  
 **Gate**: All unknowns resolved before implementation begins
 
-- [ ] T001 Research open-meteo-geocoding-sdk repository and API documentation
+- [X] T001 Research open-meteo-geocoding-sdk repository and API documentation
   - **File**: `specs/005-geocoding-sdk-integration/research.md` (reference)
   - **Details**: 
     - Visit SDK repository and understand client API
@@ -32,7 +32,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Verify SDK supports: max 10 results, English language, timeout configuration
   - **Success**: All unknowns answered, notes in research.md
 
-- [ ] T001.5 [P] Capture baseline performance metrics (pre-SDK)
+- [X] T001.5 [P] Capture baseline performance metrics (pre-SDK)
   - **File**: `specs/005-geocoding-sdk-integration/research.md`
   - **Details**:
     - Run 10 sample queries (London, San Francisco, Tokyo) with current implementation
@@ -40,7 +40,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Note test environment (network, machine specs)
   - **Success**: Baseline timings recorded to compare in T015
 
-- [ ] T002 [P] Analyze type mappings between SDK and Location model
+- [X] T002 [P] Analyze type mappings between SDK and Location model
   - **File**: `specs/005-geocoding-sdk-integration/data-model.md` (reference)
   - **Details**:
     - Compare SDK Location type fields with our Location struct (id, name, latitude, longitude, country, admin1)
@@ -49,7 +49,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Plan mapping function signature
   - **Success**: Type mapping strategy documented and validated
 
-- [ ] T002.5 [P] Finalize SDK adapter contract
+- [X] T002.5 [P] Finalize SDK adapter contract
   - **File**: `specs/005-geocoding-sdk-integration/contracts/sdk-adapter.go`
   - **Details**:
     - Define adapter struct implementing `GeocodingService`
@@ -57,7 +57,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Document mapping and error conversion touchpoints
   - **Success**: Contract complete and reflects planned adapter pattern
 
-- [ ] T003 [P] Define error handling mapping from SDK errors to user-friendly messages
+- [X] T003 [P] Define error handling mapping from SDK errors to user-friendly messages
   - **File**: `specs/005-geocoding-sdk-integration/data-model.md` (reference)
   - **Details**:
     - Identify all SDK error types
@@ -83,7 +83,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
 **Purpose**: Implement SDK adapter and integration test  
 **Gate**: All existing tests pass, new integration test validates API contract, zero performance degradation
 
-- [ ] T005 Create integration test file `src/internal/geo/integration_test.go`
+- [X] T005 Create integration test file `src/internal/geo/integration_test.go`
   - **File**: `src/internal/geo/integration_test.go` (new file)
   - **Details**:
     - Test function: `TestIntegration_GeocodingAPIContract`
@@ -93,7 +93,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
   - **Dependencies**: Task T001-T004 (research complete)
   - **Success**: Integration test file created with all test cases
 
-- [ ] T006 [P] Update `go.mod` to add SDK dependency
+- [X] T006 [P] Update `go.mod` to add SDK dependency
   - **File**: `go.mod`
   - **Details**:
     - Run: `go get github.com/gregbalnis/open-meteo-geocoding-sdk@[pinned-version-from-T001]`
@@ -102,7 +102,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Verify no version conflicts
   - **Success**: go.mod/go.sum contain pinned SDK version (from T001 discovery)
 
-- [ ] T007 Create mapping function from SDK Location to internal Location model
+- [X] T007 Create mapping function from SDK Location to internal Location model
   - **File**: `src/internal/geo/client.go`
   - **Details**:
     - Function signature: `mapSDKLocation(sdkLocation interface{}) (models.Location, error)`
@@ -113,7 +113,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
   - **Dependencies**: Task T002 (type mapping strategy)
   - **Success**: Mapping function implemented and testable
 
-- [ ] T008 Create error conversion function for SDK errors
+- [X] T008 Create error conversion function for SDK errors
   - **File**: `src/internal/geo/client.go`
   - **Details**:
     - Function signature: `convertSDKError(err error) error`
@@ -123,7 +123,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
   - **Dependencies**: Task T003 (error handling mapping)
   - **Success**: Error conversion function implemented
 
-- [ ] T009 Implement SDK client wrapper in `src/internal/geo/client.go`
+- [X] T009 Implement SDK client wrapper in `src/internal/geo/client.go`
   - **File**: `src/internal/geo/client.go`
   - **Details**:
     - Replace custom HTTP implementation with SDK client wrapper
@@ -135,7 +135,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
   - **Dependencies**: Task T006 (SDK dependency added), T007 (mapping function)
   - **Success**: Client struct and constructor implemented
 
-- [ ] T010 Implement Search method using SDK
+- [X] T010 Implement Search method using SDK
   - **File**: `src/internal/geo/client.go`
   - **Details**:
     - Method signature: `(c *Client) Search(ctx context.Context, name string) ([]models.Location, error)`
@@ -154,7 +154,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Ensure benchmark respects timeouts and does not hit network
   - **Success**: Baseline adapter overhead understood before rollout
 
-- [ ] T011 Run existing unit tests to verify compatibility
+- [X] T011 Run existing unit tests to verify compatibility
   - **File**: `src/internal/geo/client_test.go` (no changes to file)
   - **Details**:
     - Run: `go test ./src/internal/geo -v`
@@ -168,7 +168,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
   - **Dependencies**: Task T010 (Search method implemented)
   - **Success**: All existing unit tests pass
 
-- [ ] T012 [P] Run integration tests to validate API contract
+- [X] T012 [P] Run integration tests to validate API contract
   - **File**: `src/internal/geo/integration_test.go`
   - **Details**:
     - Run: `go test ./src/internal/geo -v -run Integration`
@@ -178,7 +178,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
   - **Dependencies**: Task T005 (integration test created), T010 (Search method)
   - **Success**: Integration tests validate API contract stability
 
-- [ ] T013 [P] Build and test the complete application
+- [X] T013 [P] Build and test the complete application
   - **File**: `bin/weather-reporter` (generated)
   - **Details**:
     - Run: `go build -o bin/weather-reporter ./src/cmd/weather-reporter`
@@ -187,7 +187,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
   - **Dependencies**: Task T010 (implementation complete), T006 (dependencies updated)
   - **Success**: Application builds successfully
 
-- [ ] T014 [P] Manual integration test: verify location search works end-to-end
+- [X] T014 [P] Manual integration test: verify location search works end-to-end
   - **File**: `bin/weather-reporter`
   - **Details**:
     - Test: `./bin/weather-reporter London`
@@ -199,7 +199,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
   - **Dependencies**: Task T013 (application built)
   - **Success**: Application works identically to before refactoring
 
-- [ ] T015 [P] Verify performance: no degradation in response times
+- [X] T015 [P] Verify performance: no degradation in response times
   - **File**: `bin/weather-reporter`
   - **Details**:
     - Measure response time: `time ./bin/weather-reporter London`
@@ -209,7 +209,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
   - **Dependencies**: Task T013 (application built)
   - **Success**: Performance verified, no degradation
 
-- [ ] T016 [P] Verify error handling: user-friendly messages shown
+- [X] T016 [P] Verify error handling: user-friendly messages shown
   - **File**: `bin/weather-reporter`
   - **Details**:
     - Test offline (disable network): Should show user-friendly message
@@ -229,7 +229,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
 **Purpose**: Final validation and code quality  
 **Gate**: All quality checks pass, ready for production
 
-- [ ] T017 [P] Run full test suite including all existing tests
+- [X] T017 [P] Run full test suite including all existing tests
   - **File**: `src/internal/geo/`
   - **Details**:
     - Run: `go test ./src/internal/geo -v`
@@ -238,7 +238,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Ensure 100% of existing tests still pass
   - **Success**: Full test suite passes
 
-- [ ] T018 [P] Code review: verify implementation matches adapter contract
+- [X] T018 [P] Code review: verify implementation matches adapter contract
   - **File**: `specs/005-geocoding-sdk-integration/contracts/sdk-adapter.go`
   - **Details**:
     - Compare implementation against contract
@@ -248,7 +248,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Verify interface implementation is complete
   - **Success**: Implementation matches contract
 
-- [ ] T019 [P] Run linting and formatting checks
+- [X] T019 [P] Run linting and formatting checks
   - **File**: `src/internal/geo/client.go`
   - **Details**:
     - Run: `go fmt ./src/internal/geo/`
@@ -256,7 +256,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Fix any issues
   - **Success**: Code passes linting
 
-- [ ] T020 Run final build verification
+- [X] T020 Run final build verification
   - **File**: `bin/weather-reporter`
   - **Details**:
     - Run: `go build -o bin/weather-reporter ./src/cmd/weather-reporter`
@@ -264,7 +264,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Verify: No warnings or errors
   - **Success**: Clean build
 
-- [ ] T021 [P] Update documentation if needed
+- [X] T021 [P] Update documentation if needed
   - **Files**: `README.md`, `CONTRIBUTING.md`, `Makefile` (if applicable)
   - **Details**:
     - Check if any documentation mentions geocoding implementation
@@ -291,7 +291,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
 **Purpose**: Update design documents with implementation findings  
 **Gate**: Documentation reflects actual implementation
 
-- [ ] T023 [P] Update research.md with implementation findings
+- [X] T023 [P] Update research.md with implementation findings
   - **File**: `specs/005-geocoding-sdk-integration/research.md`
   - **Details**:
     - Add actual SDK type names discovered
@@ -301,7 +301,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Note any version compatibility issues found
   - **Success**: Research document reflects actual implementation
 
-- [ ] T024 [P] Update data-model.md with actual mappings
+- [X] T024 [P] Update data-model.md with actual mappings
   - **File**: `specs/005-geocoding-sdk-integration/data-model.md`
   - **Details**:
     - Update with actual SDK field names
@@ -310,7 +310,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Verify Location struct unchanged
   - **Success**: Data model document is accurate
 
-- [ ] T025 [P] Update quickstart.md with actual commands
+- [X] T025 [P] Update quickstart.md with actual commands
   - **File**: `specs/005-geocoding-sdk-integration/quickstart.md`
   - **Details**:
     - Verify all steps work as documented
@@ -319,7 +319,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Update any SDK package names if different
   - **Success**: Quickstart is accurate and tested
 
-- [ ] T026 Mark plan.md as complete
+- [X] T026 Mark plan.md as complete
   - **File**: `specs/005-geocoding-sdk-integration/plan.md`
   - **Details**:
     - Update status from "Draft" to "Complete"

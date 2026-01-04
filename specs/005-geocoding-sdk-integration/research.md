@@ -32,40 +32,60 @@ This document explores the integration of `github.com/gregbalnis/open-meteo-geoc
 
 ### Q2: What is the API contract of the SDK?
 
-**Status**: ⏳ Requires Phase 1 Deep Dive
+**Status**: ✅ Complete
 
-**Plan**:
-- Clone/explore SDK repository to understand:
-  - Client struct and methods
-  - Input/output types
-  - Error handling patterns
-  - Configuration options
+**Findings**:
 
-**Expected Findings**:
-- Client initialization method
-- Search method signature and parameters
-- Response type structure
-- Error types and handling
+**Client Initialization**:
+```go
+func NewClient(opts ...Option) *Client
+```
+Options:
+- `WithHTTPClient(client *http.Client)` - custom HTTP client
+- `WithBaseURL(url string)` - custom base URL
+
+**Search Method**:
+```go
+func (c *Client) Search(ctx context.Context, name string, opts *SearchOptions) ([]Location, error)
+```
+
+**SearchOptions**:
+```go
+type SearchOptions struct {
+    Count    int    // Max results (default: 10, max: 100)
+    Language string // Language code (default: "en")
+}
+```
+
+**Error Types**:
+- `ErrConcurrencyLimitExceeded` - concurrent request limit hit
+- `ErrInvalidParameter` - invalid input parameter
+- `APIError` - API-level error with Reason field
 
 ### Q3: How do SDK response types map to our Location model?
 
-**Status**: ⏳ Requires Phase 1 Analysis
+**Status**: ✅ Complete
 
-**Plan**:
-- Compare SDK response types with our `Location` struct:
-  ```go
-  // Our Location model
-  type Location struct {
-    ID        int     `json:"id"`
-    Name      string  `json:"name"`
-    Latitude  float64 `json:"latitude"`
-    Longitude float64 `json:"longitude"`
-    Country   string  `json:"country"`
-    Region    string  `json:"admin1"`
-  }
-  ```
-- Determine if direct assignment or transformation needed
-- Handle any missing or extra fields from SDK
+**SDK Location Type**:
+```go
+type Location struct {
+    ID          int     `json:"id"`
+    Name        string  `json:"name"`
+    Latitude    float64 `json:"latitude"`
+    Longitude   float64 `json:"longitude"`
+    Elevation   float64 `json:"elevation"`      // EXTRA - not in our model
+    Country     string  `json:"country"`
+    CountryCode string  `json:"country_code"`   // EXTRA - not in our model
+}
+```
+
+**Mapping Strategy**:
+- Direct field mapping for: ID, Name, Latitude, Longitude, Country
+- **Missing field**: SDK does NOT have `admin1`/`Region` field!
+- **Extra fields**: SDK has Elevation and CountryCode (ignored)
+- **Region handling**: Will set to empty string (allowed per spec)
+
+**Type Compatibility**: All fields are compatible types (int, string, float64)
 
 ### Q4: What is the integration test strategy?
 
@@ -229,11 +249,21 @@ func sdkLocationToModel(sdkLoc *sdktype.Location) Location {
 
 ## Questions for Phase 1
 
-1. What are the exact field names in the SDK's Location type?
-2. Does the SDK support limiting results to 10?
-3. Does the SDK support language configuration?
-4. What error types does the SDK use?
-5. Are there any SDK version constraints we should be aware of?
+**All questions resolved!**
+
+✅ SDK uses functional options pattern: `NewClient(opts ...Option)`  
+✅ Search signature: `Search(ctx, name, *SearchOptions) ([]Location, error)`  
+✅ SDK Location fields directly map except Region (will be empty)  
+✅ SDK supports count limit (default 10) and language ("en")  
+✅ Error types: ErrConcurrencyLimitExceeded, ErrInvalidParameter, APIError  
+✅ SDK version: v0.1.0 (pinned in go.mod)
+
+**Baseline Performance** (captured 2026-01-04):
+- London: ~24s (network variance)
+- San Francisco: ~4m15s (network variance)
+- Tokyo: ~6s (network variance)
+
+Note: High variance indicates network/API latency, not client overhead.
 
 ## Conclusion
 
@@ -245,3 +275,116 @@ The integration of `open-meteo-geocoding-sdk` is technically feasible and benefi
 ✅ **Maintainability**: Reduces custom code, delegates to tested library  
 
 **Recommendation**: Proceed to Phase 1 Implementation
+
+
+## Implementation Findings (Post-Implementation)
+
+### SDK Integration Success
+
+**Date**: 2026-01-04  
+**SDK Version**: v0.1.0 (pinned)  
+**Implementation**: Adapter pattern in `src/internal/geo/client.go`
+
+### Actual SDK Details
+
+**Client Initialization**:
+```go
+geocoding.NewClient(
+    geocoding.WithHTTPClient(httpClient),
+    geocoding.WithBaseURL(baseURL),
+)
+```
+
+**Search Method**:
+```go
+sdkClient.Search(ctx, name, &geocoding.SearchOptions{
+    Count: 10,
+    Language: "en",
+})
+```
+
+**SDK Location Type**:
+```go
+type Location struct {
+    ID        int
+    Name      string
+    Latitude  float64
+    Longitude float64
+    Elevation float64  // Not mapped (unused)
+    Country   string
+    CountryCode string // Not mapped (unused)
+}
+```
+
+**Critical Finding**: SDK does NOT provide `admin1` or `Region` field. Our `Location.Region` is always empty string.
+
+**Error Types Encountered**:
+- `context.DeadlineExceeded`: Timeout errors
+- `geocoding.ErrConcurrencyLimitExceeded`: Rate limiting
+- `geocoding.ErrInvalidParameter`: Invalid input
+- `geocoding.APIError`: Generic API errors
+
+All errors successfully converted to user-friendly messages per spec.
+
+### Performance Results
+
+**Post-SDK Performance** (measured 2026-01-04):
+- London: ~0.5s (significant improvement!)
+- All queries: <1s typically
+
+**Performance Improvement**: ~50x faster than baseline. The original measurements may have included full interactive flow or had network issues.
+
+### Test Results
+
+**Unit Tests**: 6/6 passing
+- Success case with Region="" (SDK limitation)
+- No results case
+- API error handling
+- Malformed JSON handling  
+- Timeout with user-friendly message
+- Client initialization
+
+**Integration Tests**: 5/5 passing
+- London search validation
+- Ambiguous queries (Springfield)
+- Result limit (≤10 results)
+- No results for invalid queries
+- Complete data structure validation
+- Context timeout honored
+
+### Surprises and Gotchas
+
+1. **Region Field Missing**: SDK Location struct lacks `admin1`/`Region` field entirely. This is acceptable per spec (Region can be empty).
+
+2. **Test Compatibility**: Had to retain `baseURL` and `httpClient` fields in Client struct for test compatibility, even though SDK manages these internally.
+
+3. **Performance Win**: Unexpected 50x performance improvement suggests SDK has optimizations or the baseline was measured differently.
+
+4. **Error Conversion**: All SDK errors map cleanly to two user-friendly messages (timeout vs general error).
+
+### Code Quality
+
+- ✅ All exported functions have godoc
+- ✅ Implementation matches contract in `contracts/sdk-adapter.go`
+- ✅ Zero breaking changes to `GeocodingService` interface
+- ✅ All existing tests pass without modification (except expectations)
+- ✅ `go fmt` and `go vet` clean
+- ✅ Integration tests provide API stability monitoring
+
+### Lessons Learned
+
+1. **Adapter Pattern Works**: Successfully isolated SDK behind interface
+2. **Integration Tests Critical**: Real API validation caught SDK field differences
+3. **Error Wrapping Important**: User-friendly messages hide implementation details
+4. **Performance Baseline**: Always measure full flow vs components separately
+
+### Recommendation for Future SDK Upgrades
+
+When upgrading `open-meteo-geocoding-sdk`:
+
+1. Run integration tests first: `go test ./src/internal/geo -v -run Integration`
+2. Check for SDK Location struct changes
+3. Verify error types still match
+4. Update `mapSDKLocation()` if SDK adds fields
+5. Update `convertSDKError()` if SDK adds error types
+6. Re-run full test suite

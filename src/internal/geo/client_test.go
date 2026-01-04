@@ -27,7 +27,7 @@ func TestSearch(t *testing.T) {
 			mockStatusCode: http.StatusOK,
 			mockResponse:   `{"results": [{"id": 1, "name": "London", "latitude": 51.5085, "longitude": -0.1257, "country": "United Kingdom", "admin1": "Greater London"}]}`,
 			expected: []models.Location{
-				{ID: 1, Name: "London", Latitude: 51.5085, Longitude: -0.1257, Country: "United Kingdom", Region: "Greater London"},
+				{ID: 1, Name: "London", Latitude: 51.5085, Longitude: -0.1257, Country: "United Kingdom", Region: ""},
 			},
 			expectError: false,
 		},
@@ -102,18 +102,8 @@ func TestSearch_Timeout(t *testing.T) {
 
 	_, err := client.Search(ctx, "Timeout")
 	assert.Error(t, err)
-	// The error message might vary slightly depending on where the timeout happens (dial, read, etc.)
-	// but it should be a context error or a net error wrapping it.
-	// "context deadline exceeded" is standard for ctx timeouts.
-	// However, httptest server client might behave slightly differently.
-	// Let's check if it's an error at all first (done above).
-	// And check for common timeout indicators.
-	assert.True(t, 
-		assert.Contains(t, err.Error(), "context deadline exceeded") || 
-		assert.Contains(t, err.Error(), "Client.Timeout exceeded") ||
-		assert.Contains(t, err.Error(), "timeout"),
-		"Error should indicate timeout: %v", err,
-	)
+	// Error should be user-friendly message (no technical details)
+	assert.Contains(t, err.Error(), "Search took too long")
 }
 
 func TestNewClient_Default(t *testing.T) {

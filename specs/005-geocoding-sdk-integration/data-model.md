@@ -89,37 +89,28 @@ The `open-meteo-geocoding-sdk` provides Location data that must be converted to 
 
 ```go
 // mapSDKLocation converts SDK location response to internal Location model
-func mapSDKLocation(sdkLoc *sdk.Location) (Location, error) {
-  // Validate required fields from SDK response
-  if sdkLoc == nil {
-    return Location{}, fmt.Errorf("SDK location is nil")
-  }
+func mapSDKLocation(sdkLoc geocoding.Location) models.Location {
+  // SDK Location has: ID, Name, Latitude, Longitude, Elevation, Country, CountryCode
+  // Our Location needs: ID, Name, Latitude, Longitude, Country, Region
+  // NOTE: SDK does NOT provide admin1/Region field - will be empty
   
-  if sdkLoc.Name == "" {
-    return Location{}, fmt.Errorf("SDK location missing name")
+  return models.Location{
+    ID:        sdkLoc.ID,
+    Name:      sdkLoc.Name,
+    Latitude:  sdkLoc.Latitude,
+    Longitude: sdkLoc.Longitude,
+    Country:   sdkLoc.Country,
+    Region:    "", // SDK doesn't provide admin1/region
   }
-  
-  if sdkLoc.Country == "" {
-    return Location{}, fmt.Errorf("SDK location missing country")
-  }
-  
-  // Map SDK fields to internal Location struct
-  return Location{
-    ID:        sdkLoc.ID,           // Direct mapping
-    Name:      sdkLoc.Name,         // Direct mapping
-    Latitude:  sdkLoc.Latitude,     // Direct mapping (float64)
-    Longitude: sdkLoc.Longitude,    // Direct mapping (float64)
-    Country:   sdkLoc.Country,      // Direct mapping
-    Region:    sdkLoc.Admin1,       // SDK uses "Admin1" for administrative region
-  }, nil
 }
 ```
 
 **Mapping Notes**:
-- The SDK's `Admin1` field maps to our `Region` field (both represent administrative subdivisions)
-- All numeric fields are `float64` in the SDK
+- The SDK does NOT have an `Admin1` or `Region` field
+- Region will be empty string (acceptable per spec: "Region: Can be empty")
+- SDK provides Elevation and CountryCode fields we don't use (ignored)
+- All numeric fields are `float64` in SDK (direct mapping)
 - String fields match our model exactly
-- The SDK returns an ID field we can use directly
 
 ## Error Handling
 
@@ -145,10 +136,28 @@ func convertSDKError(err error) error {
   }
   
   // Check SDK error types and return generic user-friendly message
-  // Examples:
-  // if errors.As(err, &sdk.TimeoutError{}) {
-  //   return errors.New("Search took too long. Please try again.")
-  // }
+  if errors.Is(err, geocoding.ErrConcurrencyLimitExceeded) {
+    return errors.New("Unable to search locations. Please try again.")
+  }
+  
+  if errors.Is(err, geocoding.ErrInvalidParameter) {
+    return errors.New("Unable to search locations. Please try again.")
+  }
+  
+  // Check for API errors
+  var apiErr *geocoding.APIError
+  if errors.As(err, &apiErr) {
+    return errors.New("Unable to search locations. Please try again.")
+  }
+  
+  // Check for context errors (timeout, cancellation)
+  if errors.Is(err, context.DeadlineExceeded) {
+    return errors.New("Search took too long. Please try again.")
+  }
+  
+  if errors.Is(err, context.Canceled) {
+    return errors.New("Unable to search locations. Please try again.")
+  }
   
   // Default: generic message for any error
   return errors.New("Unable to search locations. Please try again.")
