@@ -7,8 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"weather-reporter/src/internal/models"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // TestIntegration_GeocodingAPIContract validates that the Open-Meteo Geocoding API

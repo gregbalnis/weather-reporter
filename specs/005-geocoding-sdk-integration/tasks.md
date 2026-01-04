@@ -273,7 +273,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
     - Document any new testing approach (integration tests)
   - **Success**: Documentation is current
 
-- [ ] T022 Create commit message documenting the refactoring
+- [X] T022 Create commit message documenting the refactoring
   - **File**: Feature branch changes
   - **Details**:
     - Summarize: Replaced custom HTTP client with open-meteo-geocoding-sdk
@@ -338,7 +338,7 @@ Break down the geocoding SDK integration into actionable tasks organized by impl
 **Purpose**: Prepare for merge and deployment  
 **Gate**: Code review approved, ready for production
 
-- [ ] T027 Commit changes to feature branch
+- [X] T027 Commit changes to feature branch
   - **Details**:
     - All changes committed with clear messages
     - Branch ready for pull request

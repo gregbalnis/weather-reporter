@@ -7,8 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	geocoding "github.com/gregbalnis/open-meteo-geocoding-sdk"
 	"weather-reporter/src/internal/models"
+
+	geocoding "github.com/gregbalnis/open-meteo-geocoding-sdk"
 )
 
 const defaultBaseURL = "https://geocoding-api.open-meteo.com/v1"

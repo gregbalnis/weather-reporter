@@ -6,8 +6,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/gregbalnis/open-meteo-geocoding-sdk"
 	"weather-reporter/src/internal/models"
+
+	geocoding "github.com/gregbalnis/open-meteo-geocoding-sdk"
 )
 
 // Client implements the models.GeocodingService interface using the
