@@ -103,7 +103,7 @@ func TestSearch_Timeout(t *testing.T) {
 	_, err := client.Search(ctx, "Timeout")
 	assert.Error(t, err)
 	// Error should be user-friendly message (no technical details)
-	assert.Contains(t, err.Error(), "Search took too long")
+	assert.Contains(t, err.Error(), "search took too long")
 }
 
 func TestNewClient_Default(t *testing.T) {

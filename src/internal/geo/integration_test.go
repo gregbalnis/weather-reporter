@@ -7,8 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"weather-reporter/src/internal/models"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -98,7 +96,7 @@ func TestIntegration_GeocodingAPIContract(t *testing.T) {
 
 		// Verify all Location struct fields are accessible
 		// This ensures the SDK → internal model mapping is complete
-		var testLoc models.Location = tokyo
+		var testLoc = tokyo
 		_ = testLoc.ID
 		_ = testLoc.Name
 		_ = testLoc.Latitude
@@ -152,7 +150,7 @@ func TestIntegration_APIContractChange(t *testing.T) {
 		_, err := client.Search(ctx, "London")
 
 		assert.Error(t, err, "Should return error when context times out")
-		assert.Contains(t, err.Error(), "Search took too long", "Should return user-friendly timeout message")
+		assert.Contains(t, err.Error(), "search took too long", "Should return user-friendly timeout message")
 	})
 
 	t.Run("Network_Error_Handling", func(t *testing.T) {

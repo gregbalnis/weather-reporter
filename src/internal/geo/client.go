@@ -110,24 +110,24 @@ func convertSDKError(err error) error {
 
 	// Context-based errors
 	if errors.Is(err, context.DeadlineExceeded) {
-		return errors.New("Search took too long. Please try again.")
+		return errors.New("search took too long. Please try again")
 	}
 	if errors.Is(err, context.Canceled) {
-		return errors.New("Unable to search locations. Please try again.")
+		return errors.New("unable to search locations. Please try again")
 	}
 
 	// SDK-defined errors
 	if errors.Is(err, geocoding.ErrConcurrencyLimitExceeded) {
-		return errors.New("Unable to search locations. Please try again.")
+		return errors.New("unable to search locations. Please try again")
 	}
 	if errors.Is(err, geocoding.ErrInvalidParameter) {
-		return errors.New("Unable to search locations. Please try again.")
+		return errors.New("unable to search locations. Please try again")
 	}
 	var apiErr *geocoding.APIError
 	if errors.As(err, &apiErr) {
-		return errors.New("Unable to search locations. Please try again.")
+		return errors.New("unable to search locations. Please try again")
 	}
 
 	// Default fallback
-	return errors.New("Unable to search locations. Please try again.")
+	return errors.New("unable to search locations. Please try again")
 }
