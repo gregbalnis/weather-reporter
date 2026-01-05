@@ -3,7 +3,7 @@ module weather-reporter
 go 1.25.5
 
 require (
-	github.com/gregbalnis/open-meteo-geocoding-sdk v0.1.0
+	github.com/gregbalnis/open-meteo-geocoding-sdk v0.2.0
 	github.com/gregbalnis/open-meteo-weather-sdk v0.2.0
 	github.com/stretchr/testify v1.11.1
 )

@@ -1,7 +1,7 @@
-github.com/gregbalnis/open-meteo-geocoding-sdk v0.1.0 h1:s8mmKr0A5j2KyPwtRkBSO8YR2qQru21iItPbtrdZk8M=
-github.com/gregbalnis/open-meteo-geocoding-sdk v0.1.0/go.mod h1:rJRKhlCSrtvkKHfDy+7gtHF/LIa2rUEHHRtuHQJ7u/Y=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/gregbalnis/open-meteo-geocoding-sdk v0.2.0 h1:a1m3It2r8DDzaBu7B7+fVkMRamI1g+Z1KtlOwcCUJQU=
+github.com/gregbalnis/open-meteo-geocoding-sdk v0.2.0/go.mod h1:rJRKhlCSrtvkKHfDy+7gtHF/LIa2rUEHHRtuHQJ7u/Y=
 github.com/gregbalnis/open-meteo-weather-sdk v0.2.0 h1:A5igDduuCC9cSt7b5fHZNsGvJ4yi1MpMH1s+pdJkUW8=
 github.com/gregbalnis/open-meteo-weather-sdk v0.2.0/go.mod h1:0fzsVpCxzshW7RhzC1+QTrOid01nhrOkwhqDGDYx0fg=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

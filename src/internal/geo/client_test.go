@@ -25,9 +25,9 @@ func TestSearch(t *testing.T) {
 			name:           "Success",
 			query:          "London",
 			mockStatusCode: http.StatusOK,
-			mockResponse:   `{"results": [{"id": 1, "name": "London", "latitude": 51.5085, "longitude": -0.1257, "country": "United Kingdom", "admin1": "Greater London"}]}`,
+			mockResponse:   `{"results": [{"id": 1, "name": "London", "latitude": 51.5085, "longitude": -0.1257, "country": "United Kingdom", "admin1": "England"}]}`,
 			expected: []models.Location{
-				{ID: 1, Name: "London", Latitude: 51.5085, Longitude: -0.1257, Country: "United Kingdom", Region: ""},
+				{ID: 1, Name: "London", Latitude: 51.5085, Longitude: -0.1257, Country: "United Kingdom", Region: "England"},
 			},
 			expectError: false,
 		},

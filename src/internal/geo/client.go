@@ -97,7 +97,7 @@ func mapSDKLocation(sdkLocation geocoding.Location) models.Location {
 		Latitude:  sdkLocation.Latitude,
 		Longitude: sdkLocation.Longitude,
 		Country:   sdkLocation.Country,
-		Region:    "", // SDK doesn't provide admin1/region field
+		Region:    sdkLocation.Admin1,
 	}
 }
 
