@@ -29,3 +29,15 @@ go.work.sum
 
 weather-reporter
 bin/
+
+# Build artifacts
+dist/
+build/
+
+# Dependency directories
+node_modules/
+vendor/
+
+# Logs and environment
+*.log
+.env*

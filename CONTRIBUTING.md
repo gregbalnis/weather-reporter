@@ -8,7 +8,8 @@
 
 ### Common Tasks
 - `make build`: Build the binary
-- `make test`: Run tests
+- `make test`: Run tests (includes integration tests requiring network)
+- `go test -short ./src/...`: Run unit tests only (skip integration tests)
 - `make lint`: Run linter
 
 ## Release Process

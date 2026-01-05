@@ -3,74 +3,131 @@ package geo
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http"
-	"net/url"
 	"time"
 
 	"weather-reporter/src/internal/models"
+
+	geocoding "github.com/gregbalnis/open-meteo-geocoding-sdk"
 )
 
 const defaultBaseURL = "https://geocoding-api.open-meteo.com/v1"
 
-// Client is a client for the geocoding API.
+// Client is a geocoding client that implements models.GeocodingService
+// using the open-meteo-geocoding-sdk library. It retains baseURL/httpClient
+// fields for compatibility with existing tests while delegating requests to
+// the SDK client.
 type Client struct {
 	httpClient *http.Client
 	baseURL    string
+	sdkClient  *geocoding.Client
 }
 
-// NewClient creates a new geocoding client.
+// NewClient creates a new geocoding client using the open-meteo-geocoding-sdk.
 // If httpClient is nil, a default client with a 10s timeout is used.
+//
+// The client is configured to:
+//   - Return up to 10 location results per search
+//   - Use English language for location names
+//   - Respect context cancellation and timeouts
 func NewClient(httpClient *http.Client) *Client {
 	if httpClient == nil {
-		httpClient = &http.Client{
-			Timeout: 10 * time.Second,
-		}
+		httpClient = &http.Client{Timeout: 10 * time.Second}
 	}
+
+	baseURL := defaultBaseURL
+	// SDK expects the full endpoint including /search
+	sdkBase := baseURL + "/search"
+
+	var opts []geocoding.Option
+	opts = append(opts, geocoding.WithHTTPClient(httpClient))
+	opts = append(opts, geocoding.WithBaseURL(sdkBase))
+
 	return &Client{
 		httpClient: httpClient,
-		baseURL:    defaultBaseURL,
+		baseURL:    baseURL,
+		sdkClient:  geocoding.NewClient(opts...),
 	}
 }
 
-type searchResponse struct {
-	Results []models.Location `json:"results"`
-}
-
-// Search searches for locations by name.
+// Search searches for locations by name using the SDK.
+// It returns up to 10 matching locations.
+//
+// All errors are converted to user-friendly messages without technical details:
+//   - Timeout errors: "Search took too long. Please try again."
+//   - All other errors: "Unable to search locations. Please try again."
 func (c *Client) Search(ctx context.Context, name string) ([]models.Location, error) {
-	u, err := url.Parse(c.baseURL + "/search")
+	// Configure search options
+	opts := &geocoding.SearchOptions{
+		Count:    10,
+		Language: "en",
+	}
+
+	// Call SDK
+	sdkClient := c.sdkClient
+	if c.baseURL != defaultBaseURL {
+		// Rebuild SDK client with overridden base URL for tests
+		sdkClient = geocoding.NewClient(
+			geocoding.WithHTTPClient(c.httpClient),
+			geocoding.WithBaseURL(c.baseURL+"/search"),
+		)
+	}
+
+	sdkLocations, err := sdkClient.Search(ctx, name, opts)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse base URL: %w", err)
+		return nil, convertSDKError(err)
 	}
 
-	q := u.Query()
-	q.Set("name", name)
-	q.Set("count", "10")
-	q.Set("language", "en")
-	q.Set("format", "json")
-	u.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+	// Map SDK locations to internal model
+	locations := make([]models.Location, len(sdkLocations))
+	for i, sdkLoc := range sdkLocations {
+		locations[i] = mapSDKLocation(sdkLoc)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute request: %w", err)
-	}
-	defer func() { _ = resp.Body.Close() }()
+	return locations, nil
+}
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+// mapSDKLocation converts an SDK location to our internal Location model.
+// Note: The SDK does not provide an admin1/region field, so Region will be empty.
+func mapSDKLocation(sdkLocation geocoding.Location) models.Location {
+	return models.Location{
+		ID:        sdkLocation.ID,
+		Name:      sdkLocation.Name,
+		Latitude:  sdkLocation.Latitude,
+		Longitude: sdkLocation.Longitude,
+		Country:   sdkLocation.Country,
+		Region:    sdkLocation.Admin1,
+	}
+}
+
+// convertSDKError converts SDK errors to user-friendly error messages.
+// All technical details are hidden from users.
+func convertSDKError(err error) error {
+	if err == nil {
+		return nil
 	}
 
-	var searchResp searchResponse
-	if err := json.NewDecoder(resp.Body).Decode(&searchResp); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
+	// Context-based errors
+	if errors.Is(err, context.DeadlineExceeded) {
+		return errors.New("search took too long, please try again")
+	}
+	if errors.Is(err, context.Canceled) {
+		return errors.New("unable to search locations, please try again")
 	}
 
-	return searchResp.Results, nil
+	// SDK-defined errors
+	if errors.Is(err, geocoding.ErrConcurrencyLimitExceeded) {
+		return errors.New("unable to search locations, please try again")
+	}
+	if errors.Is(err, geocoding.ErrInvalidParameter) {
+		return errors.New("unable to search locations, please try again")
+	}
+	var apiErr *geocoding.APIError
+	if errors.As(err, &apiErr) {
+		return errors.New("unable to search locations, please try again")
+	}
+
+	// Default fallback
+	return errors.New("unable to search locations, please try again")
 }
